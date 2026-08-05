@@ -1,18 +1,131 @@
 // Directorio público PBA — Leaflet + MarkerCluster + base unificada (activos)
 const DTO_DEFAULT = 'Buenos Aires';
 const CITY_BOUNDS = {
-  'Avellaneda':{lat:-34.6627,lng:-58.3653,span:0.028},'Lanús':{lat:-34.7082,lng:-58.3910,span:0.032},
-  'Wilde':{lat:-34.6970,lng:-58.3190,span:0.018},'Remedios de Escalada':{lat:-34.7250,lng:-58.4030,span:0.016},
-  'Valentín Alsina':{lat:-34.6720,lng:-58.4150,span:0.012},'Dock Sud':{lat:-34.6550,lng:-58.3450,span:0.012},
-  'Sarandí':{lat:-34.6800,lng:-58.3450,span:0.014},'Villa Domínico':{lat:-34.6900,lng:-58.3300,span:0.012},
-  'Monte Chingolo':{lat:-34.7350,lng:-58.4500,span:0.012},'La Plata':{lat:-34.9205,lng:-57.9536,span:0.05},
-  'Mar del Plata':{lat:-38.0055,lng:-57.5426,span:0.06},'Morón':{lat:-34.6534,lng:-58.6198,span:0.03},
-  'La Matanza':{lat:-34.7600,lng:-58.6250,span:0.05},'Quilmes':{lat:-34.7290,lng:-58.2630,span:0.03},
-  'San Isidro':{lat:-34.4730,lng:-58.5100,span:0.03},'San Martín':{lat:-34.5760,lng:-58.5370,span:0.03},
-  'Lomas de Zamora':{lat:-34.7580,lng:-58.4050,span:0.03},'Bahía Blanca':{lat:-38.7183,lng:-62.2663,span:0.05},
-  'Azul':{lat:-36.7780,lng:-59.8580,span:0.03},'San Nicolás':{lat:-33.3330,lng:-60.2150,span:0.03},
-  'Tigre':{lat:-34.4260,lng:-58.5800,span:0.03},'Pilar':{lat:-34.4580,lng:-58.9140,span:0.04},
-  'Merlo':{lat:-34.6680,lng:-58.7280,span:0.03},'Moreno':{lat:-34.6500,lng:-58.7900,span:0.03}
+  '25 de Mayo':{lat:-35.428,lng:-60.173,span:0.02},
+  'Adrogue':{lat:-34.8,lng:-58.385,span:0.015},
+  'Adrogué':{lat:-34.8,lng:-58.385,span:0.015},
+  'Almirante Brown':{lat:-34.82,lng:-58.38,span:0.03},
+  'Avellaneda':{lat:-34.6627,lng:-58.3653,span:0.028},
+  'Ayacucho':{lat:-37.153,lng:-58.488,span:0.02},
+  'Azul':{lat:-36.778,lng:-59.858,span:0.03},
+  'Bahia Blanca':{lat:-38.7183,lng:-62.2663,span:0.05},
+  'Bahía Blanca':{lat:-38.7183,lng:-62.2663,span:0.05},
+  'Balcarce':{lat:-37.846,lng:-58.255,span:0.02},
+  'Banfield':{lat:-34.743,lng:-58.392,span:0.02},
+  'Beccar':{lat:-34.463,lng:-58.534,span:0.012},
+  'Berazategui':{lat:-34.763,lng:-58.211,span:0.025},
+  'Bolivar':{lat:-36.23,lng:-61.114,span:0.02},
+  'Bolívar':{lat:-36.23,lng:-61.114,span:0.02},
+  'Bragado':{lat:-35.119,lng:-60.49,span:0.02},
+  'Burzaco':{lat:-34.825,lng:-58.39,span:0.02},
+  'Campana':{lat:-34.168,lng:-58.959,span:0.025},
+  'Canning':{lat:-34.877,lng:-58.507,span:0.02},
+  'Canuelas':{lat:-35.052,lng:-58.761,span:0.025},
+  'Caseros':{lat:-34.606,lng:-58.564,span:0.015},
+  'Castelar':{lat:-34.655,lng:-58.641,span:0.018},
+  'Cañuelas':{lat:-35.052,lng:-58.761,span:0.025},
+  'Chascomus':{lat:-35.575,lng:-58.009,span:0.02},
+  'Chascomús':{lat:-35.575,lng:-58.009,span:0.02},
+  'Chivilcoy':{lat:-34.8969,lng:-60.0165,span:0.02},
+  'Coronel Suarez':{lat:-37.459,lng:-61.918,span:0.02},
+  'Coronel Suárez':{lat:-37.459,lng:-61.918,span:0.02},
+  'Dock Sud':{lat:-34.655,lng:-58.345,span:0.012},
+  'Dolores':{lat:-36.313,lng:-57.679,span:0.02},
+  'Escobar':{lat:-34.349,lng:-58.795,span:0.03},
+  'Ezeiza':{lat:-34.854,lng:-58.523,span:0.025},
+  'Florencio Varela':{lat:-34.821,lng:-58.276,span:0.025},
+  'Florida':{lat:-34.532,lng:-58.49,span:0.012},
+  'General Rodriguez':{lat:-34.608,lng:-58.95,span:0.025},
+  'General Rodríguez':{lat:-34.608,lng:-58.95,span:0.025},
+  'Gerli':{lat:-34.685,lng:-58.382,span:0.01},
+  'Haedo':{lat:-34.644,lng:-58.596,span:0.015},
+  'Hurlingham':{lat:-34.59,lng:-58.639,span:0.02},
+  'Ituzaingo':{lat:-34.658,lng:-58.667,span:0.02},
+  'Ituzaingó':{lat:-34.658,lng:-58.667,span:0.02},
+  'José C. Paz':{lat:-34.517,lng:-58.768,span:0.025},
+  'Junin':{lat:-34.5838,lng:-60.9444,span:0.025},
+  'Junín':{lat:-34.5838,lng:-60.9444,span:0.025},
+  'La Matanza':{lat:-34.76,lng:-58.625,span:0.05},
+  'La Plata':{lat:-34.9205,lng:-57.9536,span:0.05},
+  'Lanus':{lat:-34.7082,lng:-58.391,span:0.032},
+  'Lanus Este':{lat:-34.7082,lng:-58.37,span:0.015},
+  'Lanus Oeste':{lat:-34.7082,lng:-58.41,span:0.015},
+  'Lanús':{lat:-34.7082,lng:-58.391,span:0.032},
+  'Lanús Este':{lat:-34.7082,lng:-58.37,span:0.015},
+  'Lanús Oeste':{lat:-34.7082,lng:-58.41,span:0.015},
+  'Lincoln':{lat:-34.868,lng:-61.53,span:0.02},
+  'Lobos':{lat:-35.185,lng:-59.096,span:0.02},
+  'Lomas De Zamora':{lat:-34.758,lng:-58.405,span:0.03},
+  'Lomas de Zamora':{lat:-34.758,lng:-58.405,span:0.03},
+  'Longchamps':{lat:-34.859,lng:-58.387,span:0.015},
+  'Lujan':{lat:-34.5703,lng:-59.105,span:0.025},
+  'Luján':{lat:-34.5703,lng:-59.105,span:0.025},
+  'Malvinas Argentinas':{lat:-34.5,lng:-58.7,span:0.03},
+  'Mar Del Plata':{lat:-38.0055,lng:-57.5426,span:0.06},
+  'Mar del Plata':{lat:-38.0055,lng:-57.5426,span:0.06},
+  'Martinez':{lat:-34.488,lng:-58.503,span:0.015},
+  'Martínez':{lat:-34.488,lng:-58.503,span:0.015},
+  'Mercedes':{lat:-34.6514,lng:-59.4307,span:0.02},
+  'Merlo':{lat:-34.668,lng:-58.728,span:0.03},
+  'Miramar':{lat:-38.27,lng:-57.839,span:0.02},
+  'Monte Chingolo':{lat:-34.735,lng:-58.45,span:0.012},
+  'Monte Grande':{lat:-34.819,lng:-58.466,span:0.02},
+  'Moreno':{lat:-34.65,lng:-58.79,span:0.03},
+  'Moron':{lat:-34.6534,lng:-58.6198,span:0.03},
+  'Morón':{lat:-34.6534,lng:-58.6198,span:0.03},
+  'Navarro':{lat:-35.003,lng:-59.268,span:0.02},
+  'Necochea':{lat:-38.5545,lng:-58.7396,span:0.03},
+  'Nordelta':{lat:-34.412,lng:-58.645,span:0.025},
+  'Nueve De Julio':{lat:-35.444,lng:-60.883,span:0.02},
+  'Nueve de Julio':{lat:-35.444,lng:-60.883,span:0.02},
+  'Olavarria':{lat:-36.8927,lng:-60.3225,span:0.03},
+  'Olavarría':{lat:-36.8927,lng:-60.3225,span:0.03},
+  'Olivos':{lat:-34.508,lng:-58.49,span:0.015},
+  'Pehuajo':{lat:-35.811,lng:-61.899,span:0.02},
+  'Pehuajó':{lat:-35.811,lng:-61.899,span:0.02},
+  'Pergamino':{lat:-33.891,lng:-60.5736,span:0.025},
+  'Pigue':{lat:-37.605,lng:-62.402,span:0.02},
+  'Pigüé':{lat:-37.605,lng:-62.402,span:0.02},
+  'Pilar':{lat:-34.458,lng:-58.914,span:0.04},
+  'Pinamar':{lat:-37.109,lng:-56.861,span:0.02},
+  'Pineyro':{lat:-34.668,lng:-58.39,span:0.01},
+  'Piñeyro':{lat:-34.668,lng:-58.39,span:0.01},
+  'Quilmes':{lat:-34.729,lng:-58.263,span:0.03},
+  'Ramos Mejia':{lat:-34.642,lng:-58.565,span:0.018},
+  'Ramos Mejía':{lat:-34.642,lng:-58.565,span:0.018},
+  'Rauch':{lat:-36.775,lng:-59.089,span:0.015},
+  'Remedios de Escalada':{lat:-34.725,lng:-58.403,span:0.016},
+  'Saladillo':{lat:-35.637,lng:-59.779,span:0.02},
+  'San Bernardo':{lat:-36.687,lng:-56.679,span:0.015},
+  'San Fernando':{lat:-34.441,lng:-58.558,span:0.02},
+  'San Isidro':{lat:-34.473,lng:-58.51,span:0.03},
+  'San Justo':{lat:-34.682,lng:-58.561,span:0.02},
+  'San Martin':{lat:-34.576,lng:-58.537,span:0.03},
+  'San Martín':{lat:-34.576,lng:-58.537,span:0.03},
+  'San Miguel':{lat:-34.543,lng:-58.712,span:0.025},
+  'San Nicolas':{lat:-33.333,lng:-60.215,span:0.03},
+  'San Nicolás':{lat:-33.333,lng:-60.215,span:0.03},
+  'Santa Teresita':{lat:-36.542,lng:-56.7,span:0.015},
+  'Sarandi':{lat:-34.68,lng:-58.345,span:0.014},
+  'Sarandí':{lat:-34.68,lng:-58.345,span:0.014},
+  'Tandil':{lat:-37.3217,lng:-59.1332,span:0.03},
+  'Temperley':{lat:-34.768,lng:-58.394,span:0.015},
+  'Tigre':{lat:-34.426,lng:-58.58,span:0.03},
+  'Trenque Lauquen':{lat:-35.97,lng:-62.733,span:0.025},
+  'Tres Arroyos':{lat:-38.3739,lng:-60.2798,span:0.025},
+  'Tres de Febrero':{lat:-34.6,lng:-58.56,span:0.03},
+  'Valentin Alsina':{lat:-34.672,lng:-58.415,span:0.012},
+  'Valentín Alsina':{lat:-34.672,lng:-58.415,span:0.012},
+  'Veinticinco de Mayo':{lat:-35.428,lng:-60.173,span:0.02},
+  'Vicente Lopez':{lat:-34.526,lng:-58.475,span:0.02},
+  'Vicente López':{lat:-34.526,lng:-58.475,span:0.02},
+  'Villa Ballester':{lat:-34.545,lng:-58.557,span:0.015},
+  'Villa Dominico':{lat:-34.69,lng:-58.33,span:0.012},
+  'Villa Domínico':{lat:-34.69,lng:-58.33,span:0.012},
+  'Villa Gesell':{lat:-37.2635,lng:-56.973,span:0.02},
+  'Wilde':{lat:-34.697,lng:-58.319,span:0.018},
+  'Zarate':{lat:-34.098,lng:-59.028,span:0.025},
+  'Zárate':{lat:-34.098,lng:-59.028,span:0.025},
 };
 const DEFAULT_CENTER = { lat: -34.75, lng: -58.40 };
 const BARRIO_KEYWORDS = ['Centro','Crucesita','Piñeyro','Gerli','Villa Corina','Villa Domínico','Sarandí','Dock Sud','Wilde','Lanús Este','Lanús Oeste','Villa Jardín','Villa Caraza','Villa Maipú','Remedios','Alsina','Monte Chingolo'];
@@ -50,10 +163,12 @@ function enrichRecord(u) {
   let lat = typeof u.lat === 'number' ? u.lat : null;
   let lng = typeof u.lng === 'number' ? u.lng : null;
   if (lat == null || lng == null) {
-    const key = Object.keys(CITY_BOUNDS).find(k =>
-      ciudad.toLowerCase().includes(k.toLowerCase()) ||
-      k.toLowerCase().includes(ciudad.toLowerCase().split('/')[0].trim())
-    );
+    const norm = (s) => String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+    const cn = norm(ciudad);
+    const key = Object.keys(CITY_BOUNDS).find(k => {
+      const kn = norm(k);
+      return cn === kn || cn.includes(kn) || kn.includes(cn.split('/')[0].trim());
+    });
     const box = key ? CITY_BOUNDS[key] : { lat: DEFAULT_CENTER.lat, lng: DEFAULT_CENTER.lng, span: 0.08 };
     const sk = (d.calle || '') + '|' + (d.numero || '') + '|' + u.id;
     lat = box.lat + (hash01(sk) - 0.5) * box.span;
@@ -172,7 +287,6 @@ function renderMap(list) {
   clusterGroup.clearLayers();
   markerById = {};
   const bounds = [];
-  // Todos los registros en el cluster: zoom lejos = grupos por zona/ciudad, zoom cerca = cada uno
   list.forEach(u => {
     bounds.push([u.lat, u.lng]);
     const icon = L.divIcon({
