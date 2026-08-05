@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detalle de propiedad | Marketplace Inmobiliario</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="../shared/eco-header.css" />
+  <link rel="stylesheet" href="css/custom.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#EDEDED] text-gray-800">
+
+  <header class="eco-header sticky top-0 z-50">
+    <div class="eco-header-inner">
+      <a href="index.html" class="eco-brand">
+        <div class="eco-logo-icon"><i class="fas fa-city"></i></div>
+        <div class="hidden sm:block">
+          <div class="eco-brand-name">Ecosistema</div>
+          <div class="eco-brand-sub">Marketplace</div>
+        </div>
+      </a>
+      <nav class="eco-nav">
+        <a href="../directorio-inmobiliario/index.html" class="eco-nav-item">Directorio</a>
+        <a href="index.html" class="eco-nav-item active">Marketplace</a>
+      </nav>
+      <form class="eco-search" onsubmit="event.preventDefault(); window.location='index.html'">
+        <input type="text" class="eco-search-input" placeholder="Buscar inmuebles..." />
+        <button type="submit" class="eco-search-btn"><i class="fas fa-search"></i></button>
+      </form>
+      <div class="eco-auth">
+        <a href="index.html" class="eco-auth-link">← Listado</a>
+        <a href="../directorio-inmobiliario/index.html?auth=login" class="eco-auth-cta">Iniciar sesión</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6" id="property-detail">
+    <!-- Se llena por JS -->
+    <div class="text-center py-20 text-gray-400">
+      <i class="fas fa-spinner fa-spin text-3xl mb-3"></i>
+      <p>Cargando propiedad...</p>
+    </div>
+  </main>
+
+  <footer class="ml-footer mt-10">
+    <div class="max-w-7xl mx-auto px-4 py-6 text-center text-xs text-gray-400">
+      Marketplace Inmobiliario — Demo CHV Inmobiliaria
+    </div>
+  </footer>
+
+  <script src="js/maps-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="data/agencies.js"></script>
+  <script src="data/scraped_properties.js"></script>
+  <script>
+    function getAllProperties() {
+      if (typeof SCRAPED_PROPERTIES !== "undefined" && SCRAPED_PROPERTIES.length) {
+        return SCRAPED_PROPERTIES;
+      }
+      return typeof PROPERTIES !== "undefined" ? PROPERTIES : [];
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+      let property = null;
+
+      // Primero intentamos sessionStorage (más rápido)
+      const stored = sessionStorage.getItem("currentProperty");
+      if (stored) {
+        try {
+          property = JSON.parse(stored);
+          if (property.id !== id) property = null;
+        } catch(e) {}
+      }
+
+      // Fallback a data scrapada / mock
+      if (!property && id) {
+        property = getAllProperties().find(p => p.id === id);
+      }
+
+      if (!property) {
+        document.getElementById("property-detail").innerHTML = `
+          <div class="text-center py-20">
+            <p class="text-lg text-gray-500 mb-4">Propiedad no encontrada</p>
+            <a href="index.html" class="text-blue-600 font-medium hover:underline">Volver al listado</a>
+          </div>
+        `;
+        return;
+      }
+
+      renderProperty(property);
+      initPropertyMap(property);
+    });
+
+    function initPropertyMap(p) {
+      if (typeof p.lat !== "number" || typeof p.lng !== "number") {
+        const fb = document.getElementById("property-map-fallback");
+        if (fb) fb.textContent = "Sin coordenadas disponibles";
+        return;
+      }
+
+      const key = (typeof GOOGLE_MAPS_API_KEY !== "undefined") ? GOOGLE_MAPS_API_KEY.trim() : "";
+      if (!key) {
+        const fb = document.getElementById("property-map-fallback");
+        if (fb) {
+          fb.innerHTML = `
+            <div class="text-center p-4">
+              <p class="text-gray-500 text-sm mb-1">Configurá tu API key de Google Maps</p>
+              <p class="text-xs text-gray-400">en <code>js/maps-config.js</code></p>
+            </div>`;
+        }
+        return;
+      }
+
+      window.__propertyMapInit = () => {
+        const mapEl = document.getElementById("property-map");
+        if (!mapEl || typeof google === "undefined") return;
+        const fb = document.getElementById("property-map-fallback");
+        if (fb) fb.classList.add("hidden");
+
+        const map = new google.maps.Map(mapEl, {
+          center: { lat: p.lat, lng: p.lng },
+          zoom: 15,
+          mapTypeControl: false,
+          streetViewControl: true,
+          fullscreenControl: true
+        });
+
+        new google.maps.Marker({
+          position: { lat: p.lat, lng: p.lng },
+          map,
+          title: p.title
+        });
+      };
+
+      if (typeof google !== "undefined" && google.maps) {
+        window.__propertyMapInit();
+      } else {
+        const script = document.createElement("script");
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=__propertyMapInit`;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+      }
+    }
+
+    function renderProperty(p) {
+      const mainImage = p.images?.[0] || p.image;
+      const thumbs = p.images || [p.image];
+
+      document.title = `${p.title} | Marketplace Inmobiliario`;
+
+      document.getElementById("property-detail").innerHTML = `
+        <div class="mb-4">
+          <a href="index.html" class="text-sm text-blue-600 hover:underline">
+            <i class="fas fa-arrow-left mr-1"></i> Volver al listado
+          </a>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Galería + info principal -->
+          <div class="lg:col-span-2 space-y-4">
+            <!-- Imagen principal -->
+            <div class="bg-white rounded-lg overflow-hidden">
+              <img id="main-img" src="${mainImage}" alt="${p.title}"
+                   class="w-full aspect-video object-cover"
+                   onerror="this.src='https://via.placeholder.com/800x450?text=Sin+imagen'">
+              ${thumbs.length > 1 ? `
+                <div class="flex gap-2 p-3 overflow-x-auto">
+                  ${thumbs.map((img, i) => `
+                    <img src="${img}" onclick="document.getElementById('main-img').src='${img}'"
+                         class="w-20 h-14 object-cover rounded cursor-pointer border-2 border-transparent hover:border-blue-500"
+                         onerror="this.style.display='none'">
+                  `).join("")}
+                </div>
+              ` : ""}
+            </div>
+
+            <!-- Título y specs -->
+            <div class="bg-white rounded-lg p-5">
+              <div class="flex flex-wrap gap-2 mb-3">
+                ${p.featured ? '<span class="badge-super">Super destacado</span>' : ''}
+                ${p.new ? '<span class="badge-new">Nuevo</span>' : ''}
+                <span class="operation-tag">${p.operation}</span>
+                <span class="text-xs bg-gray-100 px-2 py-1 rounded">${p.type}</span>
+                <span class="text-xs bg-gray-100 px-2 py-1 rounded">Fuente: ${p.source}</span>
+              </div>
+
+              <h1 class="text-xl md:text-2xl font-normal text-gray-900 mb-2">${p.title}</h1>
+              <p class="text-gray-500 mb-4"><i class="fas fa-map-marker-alt mr-1"></i> ${p.location}</p>
+
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4 border-y border-gray-100">
+                ${p.rooms ? `<div class="text-center">
+                  <div class="text-2xl font-light">${p.rooms}</div>
+                  <div class="text-xs text-gray-500">Ambientes</div>
+                </div>` : ""}
+                ${p.bedrooms ? `<div class="text-center">
+                  <div class="text-2xl font-light">${p.bedrooms}</div>
+                  <div class="text-xs text-gray-500">Dormitorios</div>
+                </div>` : ""}
+                ${p.bathrooms ? `<div class="text-center">
+                  <div class="text-2xl font-light">${p.bathrooms}</div>
+                  <div class="text-xs text-gray-500">Baños</div>
+                </div>` : ""}
+                ${p.covered_m2 ? `<div class="text-center">
+                  <div class="text-2xl font-light">${p.covered_m2}</div>
+                  <div class="text-xs text-gray-500">m² cubiertos</div>
+                </div>` : p.total_m2 ? `<div class="text-center">
+                  <div class="text-2xl font-light">${p.total_m2}</div>
+                  <div class="text-xs text-gray-500">m² totales</div>
+                </div>` : ""}
+              </div>
+
+              <div class="mt-5">
+                <h2 class="font-semibold mb-2">Descripción</h2>
+                <p class="text-gray-700 leading-relaxed">${p.description}</p>
+              </div>
+
+              ${p.amenities && p.amenities.length ? `
+                <div class="mt-5">
+                  <h2 class="font-semibold mb-2">Amenities</h2>
+                  <div class="flex flex-wrap gap-2">
+                    ${p.amenities.map(a => `<span class="text-sm bg-gray-100 px-3 py-1 rounded-full">${a}</span>`).join("")}
+                  </div>
+                </div>
+              ` : ""}
+
+              <!-- Mapa ubicación -->
+              <div class="mt-5">
+                <h2 class="font-semibold mb-2"><i class="fas fa-map-marker-alt text-brand-600 mr-1"></i> Ubicación</h2>
+                <p class="text-sm text-gray-500 mb-2">${p.location}</p>
+                <div id="property-map" class="w-full h-64 rounded-lg border border-gray-200 bg-gray-100 relative overflow-hidden">
+                  <div id="property-map-fallback" class="absolute inset-0 flex items-center justify-center text-sm text-gray-400">
+                    ${typeof p.lat === "number" ? "Cargando mapa..." : "Sin coordenadas"}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sidebar precio + contacto -->
+          <div class="space-y-4">
+            <div class="bg-white rounded-lg p-5 sticky top-20">
+              <div class="price text-3xl mb-1">${formatPrice(p.price, p.currency)}</div>
+              ${p.expenses ? `<div class="text-sm text-gray-500 mb-3">Expensas: $${p.expenses.toLocaleString("es-AR")}</div>` : '<div class="mb-3"></div>'}
+
+              <div class="text-sm text-gray-500 mb-4">
+                Publicado ${formatDate(p.published)} · ID ${p.id}
+              </div>
+
+              <button class="btn-ml w-full py-3 mb-2 flex items-center justify-center gap-2">
+                <i class="fas fa-comment"></i> Contactar
+              </button>
+              <button class="btn-outline w-full py-3 flex items-center justify-center gap-2">
+                <i class="far fa-heart"></i> Guardar en favoritos
+              </button>
+
+              <div class="mt-5 pt-4 border-t border-gray-100">
+                ${renderAgencyBlock(p)}
+              </div>
+            </div>
+
+            <!-- Info extra -->
+            <div class="bg-white rounded-lg p-4 text-sm">
+              <div class="font-medium mb-2">Datos de la publicación</div>
+              <ul class="space-y-1.5 text-gray-600">
+                <li class="flex justify-between"><span>Operación</span><span>${p.operation}</span></li>
+                <li class="flex justify-between"><span>Tipo</span><span>${p.type}</span></li>
+                ${p.year ? `<li class="flex justify-between"><span>Año</span><span>${p.year}</span></li>` : ""}
+                <li class="flex justify-between"><span>Cochera</span><span>${p.garage ? "Sí" : "No"}</span></li>
+                <li class="flex justify-between"><span>Fuente</span><span class="font-medium">${p.source}</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAgencyBlock(p) {
+      const ag = p.agency;
+      if (!ag) {
+        return `
+          <div class="text-sm font-medium mb-1">${p.seller || "Particular"}</div>
+          <div class="text-xs text-gray-500 mb-3">${p.seller_type || "Particular"}</div>
+          <div class="flex gap-2">
+            <button class="flex-1 border rounded py-2 text-sm hover:bg-gray-50"><i class="fas fa-phone mr-1"></i> Llamar</button>
+            <button class="flex-1 border rounded py-2 text-sm hover:bg-gray-50"><i class="fab fa-whatsapp mr-1 text-green-600"></i> WhatsApp</button>
+          </div>`;
+      }
+      const phone = ag.phone;
+      const email = ag.email;
+      const fullAg = (typeof AGENCIES_BY_ID !== "undefined" && AGENCIES_BY_ID[ag.id]) || ag;
+      const propCount = fullAg.property_count || "";
+      const verified = ag.from_padron
+        ? `<span class="inline-flex items-center gap-1 text-[11px] text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full font-medium"><i class="fas fa-certificate"></i> Mat. ${ag.matricula || "OK"}</span>`
+        : `<span class="text-[11px] text-gray-400">Detectada en marketplace</span>`;
+      return `
+        <div class="flex items-start gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full bg-teal-700 text-white flex items-center justify-center text-sm font-bold shrink-0">${(ag.name || "A").charAt(0).toUpperCase()}</div>
+          <div class="min-w-0 flex-1">
+            <div class="text-sm font-semibold truncate">${ag.name}</div>
+            <div class="mt-0.5">${verified}</div>
+            ${propCount ? `<div class="text-[11px] text-gray-400 mt-0.5">${propCount} propiedades publicadas</div>` : ""}
+          </div>
+        </div>
+        <div class="flex gap-2 mb-2">
+          ${phone ? `<a href="tel:${String(phone).replace(/\\s/g,"")}" class="flex-1 border rounded py-2 text-sm hover:bg-gray-50 text-center"><i class="fas fa-phone mr-1"></i> Llamar</a>` : `<button class="flex-1 border rounded py-2 text-sm text-gray-300 cursor-not-allowed"><i class="fas fa-phone mr-1"></i> Llamar</button>`}
+          ${phone ? `<a href="https://wa.me/54${String(phone).replace(/\\D/g,"")}" target="_blank" class="flex-1 border rounded py-2 text-sm hover:bg-gray-50 text-center"><i class="fab fa-whatsapp mr-1 text-green-600"></i> WhatsApp</a>` : `<button class="flex-1 border rounded py-2 text-sm text-gray-300 cursor-not-allowed"><i class="fab fa-whatsapp mr-1"></i> WhatsApp</button>`}
+        </div>
+        ${email ? `<a href="mailto:${email}" class="block text-xs text-blue-600 hover:underline truncate mb-2"><i class="fas fa-envelope mr-1"></i>${email}</a>` : ""}
+        ${ag.id
+          ? `<a href="../directorio-inmobiliario/agency.html?id=${encodeURIComponent(ag.id)}" class="block text-xs text-teal-700 hover:underline font-medium mt-1"><i class="fas fa-building mr-1"></i> Ver perfil de la inmobiliaria</a>`
+          : `<a href="../directorio-inmobiliario/index.html" class="block text-xs text-teal-700 hover:underline font-medium mt-1"><i class="fas fa-address-book mr-1"></i> Ver Directorio</a>`}`;
+    }
+  </script>
+</body>
+</html>

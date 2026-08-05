@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ecosistema Inmobiliario</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="../shared/eco-header.css" />
+  <style>
+    [x-cloak] { display: none !important; }
+    .feed-card { transition: all 0.2s; }
+    .feed-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.1); }
+    .sidebar-link.active { background: #e0f2fe; color: #0369a1; border-right: 3px solid #0284c7; }
+    .avatar { object-fit: cover; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+<!-- ==================== WELCOME SCREEN ==================== -->
+  <div id="welcome-screen" class="min-h-screen flex flex-col bg-gradient-to-br from-brand-900 via-brand-800 to-brand-600">
+    <div class="flex-1 flex items-center justify-center p-6">
+      <div class="w-full max-w-2xl text-center">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white/15 backdrop-blur text-white text-3xl mb-8 shadow-lg">
+          <i class="fas fa-city"></i>
+        </div>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight">
+          Bienvenidos a<br>
+          <span class="text-sky-200">Ecosistema Inmobiliario</span>
+        </h1>
+        <p class="mt-5 text-lg sm:text-xl text-white/80 max-w-lg mx-auto leading-relaxed">
+          Todos los Inmuebles, Profesionales y Clientes en un solo lugar.
+        </p>
+
+        <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-xl mx-auto">
+          <a href="../marketplace-inmobiliario/index.html"
+            class="group flex flex-col items-center gap-3 p-6 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur transition shadow-lg">
+            <div class="w-12 h-12 rounded-xl bg-emerald-500/90 text-white flex items-center justify-center text-xl group-hover:scale-110 transition">
+              <i class="fas fa-home"></i>
+            </div>
+            <span class="font-semibold text-white text-sm">Marketplace</span>
+            <span class="text-xs text-white/60">Buscar inmuebles</span>
+          </a>
+
+          <a href="padron.html"
+            class="group flex flex-col items-center gap-3 p-6 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur transition shadow-lg">
+            <div class="w-12 h-12 rounded-xl bg-sky-500/90 text-white flex items-center justify-center text-xl group-hover:scale-110 transition">
+              <i class="fas fa-address-book"></i>
+            </div>
+            <span class="font-semibold text-white text-sm">Directorio</span>
+            <span class="text-xs text-white/60">Padrón oficial + mapa</span>
+          </a>
+
+          <button onclick="goToAuth()"
+            class="group flex flex-col items-center gap-3 p-6 rounded-2xl bg-white hover:bg-sky-50 border border-white transition shadow-lg">
+            <div class="w-12 h-12 rounded-xl bg-brand-600 text-white flex items-center justify-center text-xl group-hover:scale-110 transition">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <span class="font-semibold text-brand-800 text-sm">Registrarse</span>
+            <span class="text-xs text-slate-500">o Iniciar sesión</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="pb-6 text-center text-white/40 text-xs">
+      CHV Inmobiliaria · Beta
+    </div>
+  </div>
+
+  <!-- ==================== AUTH SCREENS ==================== -->
+  <div id="auth-screen" class="hidden min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-brand-800 to-brand-600">
+    <div class="w-full max-w-md">
+      <button onclick="backToWelcome()" class="mb-4 text-white/80 hover:text-white text-sm flex items-center gap-2">
+        <i class="fas fa-arrow-left"></i> Volver al inicio
+      </button>
+
+      <!-- Login -->
+      <div id="login-box" class="bg-white rounded-2xl shadow-2xl p-8">
+        <div class="text-center mb-8">
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-100 text-brand-600 text-2xl mb-4">
+            <i class="fas fa-building"></i>
+          </div>
+          <h1 class="text-2xl font-bold text-slate-900">Ecosistema Inmobiliario</h1>
+          <p class="text-slate-500 text-sm mt-1">Ingresá a tu cuenta profesional</p>
+        </div>
+
+        <form id="login-form" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+            <input type="email" id="login-email" required
+              class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+              placeholder="tu@email.com" value="admin@chv.ar" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Contraseña</label>
+            <input type="password" id="login-password" required
+              class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+              placeholder="••••••••" value="123456" />
+          </div>
+          <button type="submit"
+            class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 rounded-lg transition">
+            Ingresar
+          </button>
+        </form>
+
+        <p class="text-center text-sm text-slate-500 mt-6">
+          ¿No tenés cuenta?
+          <button onclick="showRegister()" class="text-brand-600 font-medium hover:underline">Registrate</button>
+        </p>
+
+        <div class="mt-6 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800">
+          <strong>Demo:</strong> admin@chv.ar / 123456 (Admin CHV)<br>
+          También: juan@inmo.com / 123456
+        </div>
+      </div>
+
+      <!-- Register -->
+      <div id="register-box" class="bg-white rounded-2xl shadow-2xl p-8 hidden">
+        <div class="text-center mb-6">
+          <h2 class="text-xl font-bold">Crear cuenta</h2>
+          <p class="text-sm text-slate-500">Unirse al ecosistema profesional</p>
+        </div>
+
+        <form id="register-form" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Tipo de cuenta</label>
+            <select id="reg-type" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none">
+              <option value="INMOBILIARIA">Inmobiliaria (Admin de empresa)</option>
+              <option value="PROFESIONAL">Profesional independiente</option>
+              <option value="COLABORADOR">Colaborador / Partner</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Nombre completo / Razón social</label>
+            <input type="text" id="reg-name" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Email</label>
+            <input type="email" id="reg-email" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Contraseña</label>
+            <input type="password" id="reg-password" required minlength="6" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none" />
+          </div>
+          <div id="company-fields" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">Nombre de la inmobiliaria</label>
+              <input type="text" id="reg-company" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none" />
+            </div>
+          </div>
+          <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 rounded-lg transition">
+            Crear cuenta
+          </button>
+        </form>
+
+        <p class="text-center text-sm text-slate-500 mt-6">
+          ¿Ya tenés cuenta?
+          <button onclick="showLogin()" class="text-brand-600 font-medium hover:underline">Ingresá</button>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  
+  <div id="app" class="hidden min-h-screen flex flex-col">
+    <header class="eco-header sticky top-0 z-50">
+      <div class="eco-header-inner" style="max-width:80rem">
+        <a href="index.html" class="eco-brand" onclick="event.preventDefault(); navigate('feed')">
+          <div class="eco-logo-icon"><i class="fas fa-city"></i></div>
+          <div class="hidden sm:block">
+            <div class="eco-brand-name">Ecosistema</div>
+            <div class="eco-brand-sub">Directorio</div>
+          </div>
+        </a>
+
+        <nav class="eco-nav">
+          <button onclick="navigate('directorio')" class="eco-nav-item active" id="nav-tab-directorio">Directorio</button>
+          <a href="../marketplace-inmobiliario/index.html" class="eco-nav-item">Marketplace</a>
+        </nav>
+
+        <form class="eco-search" onsubmit="event.preventDefault(); navigate('directorio'); const q=document.getElementById('header-search'); if(q&&q.value){ const ds=document.getElementById('dir-search'); if(ds){ds.value=q.value; ds.dispatchEvent(new Event('input'));}}">
+          <input id="header-search" type="text" class="eco-search-input" placeholder="Buscar profesionales, inmobiliarias..." />
+          <button type="submit" class="eco-search-btn"><i class="fas fa-search"></i></button>
+        </form>
+
+        <div class="eco-auth">
+          <button onclick="navigate('feed')" class="eco-icon-btn" title="Feed"><i class="fas fa-home"></i></button>
+          <div class="relative">
+            <button onclick="toggleUserMenu()" class="flex items-center gap-2 p-0.5 rounded-lg hover:bg-white/10">
+              <img id="nav-avatar" src="" class="w-8 h-8 rounded-full avatar bg-white/20 object-cover" alt="" />
+            </button>
+            <div id="user-menu" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50 text-slate-800">
+              <div class="px-4 py-2 border-b border-slate-100">
+                <p id="nav-name" class="font-medium text-sm"></p>
+                <p id="nav-role" class="text-xs text-slate-500"></p>
+              </div>
+              <button onclick="navigate('perfil')" class="w-full text-left px-4 py-2 text-sm hover:bg-slate-50">Mi perfil</button>
+              <button onclick="logout()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Cerrar sesión</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 py-6">
+      <div id="view-feed" class="view hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <aside class="lg:col-span-3 hidden lg:block">
+            <div class="bg-white rounded-xl border p-4">
+              <div class="flex items-center gap-3 mb-4">
+                <img id="sidebar-avatar" class="w-12 h-12 rounded-full avatar bg-slate-200" />
+                <div><p id="sidebar-name" class="font-semibold text-sm"></p><p id="sidebar-company" class="text-xs text-slate-500"></p></div>
+              </div>
+            </div>
+          </aside>
+          <div class="lg:col-span-6 space-y-4">
+            <div class="bg-white rounded-xl border p-4">
+              <div class="flex gap-3">
+                <img id="post-avatar" class="w-10 h-10 rounded-full avatar bg-slate-200" />
+                <button onclick="openCreatePost()" class="flex-1 text-left px-4 py-2.5 bg-slate-100 rounded-full text-slate-500 text-sm">¿Qué querés compartir?</button>
+              </div>
+            </div>
+            <div id="feed-posts" class="space-y-4"></div>
+          </div>
+          <aside class="lg:col-span-3 hidden lg:block">
+            <div class="bg-white rounded-xl border p-4">
+              <h3 class="font-semibold text-sm mb-3">Sugerencias</h3>
+              <div id="suggestions" class="space-y-3"></div>
+            </div>
+          </aside>
+        </div>
+      </div>
+      <div id="view-directorio" class="view hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+          <div>
+            <h1 class="text-2xl font-bold">Directorio</h1>
+            <p class="text-sm text-slate-500">Tus redes personalizadas + padrón público</p>
+          </div>
+          <a href="padron.html" class="text-sm text-brand-600 hover:underline font-medium">
+            <i class="fas fa-external-link-alt mr-1"></i>Padrón oficial completo (mapa)
+          </a>
+        </div>
+
+        <!-- Network tabs (max 5 custom) -->
+        <div class="bg-white rounded-xl border border-slate-200 mb-4 overflow-hidden">
+          <div class="flex items-center gap-1 px-2 pt-2 overflow-x-auto border-b border-slate-100" id="network-tabs">
+            <!-- filled by JS -->
+          </div>
+          <div class="p-3 flex flex-wrap gap-2 items-center border-b border-slate-50" id="network-toolbar">
+            <button type="button" onclick="openCreateNetworkModal()" id="btn-new-network"
+              class="text-xs bg-brand-50 text-brand-700 px-3 py-1.5 rounded-lg hover:bg-brand-100 font-medium">
+              <i class="fas fa-plus mr-1"></i>Nueva red
+            </button>
+            <button type="button" onclick="openAddMemberModal()" id="btn-add-member"
+              class="text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-200 hidden">
+              <i class="fas fa-user-plus mr-1"></i>Agregar contacto
+            </button>
+            <button type="button" onclick="renameActiveNetwork()" id="btn-rename-network"
+              class="text-xs text-slate-500 hover:text-slate-700 px-2 py-1.5 hidden">
+              <i class="fas fa-pen"></i>
+            </button>
+            <button type="button" onclick="deleteActiveNetwork()" id="btn-delete-network"
+              class="text-xs text-red-500 hover:text-red-700 px-2 py-1.5 hidden">
+              <i class="fas fa-trash"></i>
+            </button>
+            <span id="network-hint" class="text-[11px] text-slate-400 ml-auto">Hasta 5 redes (Amigos, Asociación, etc.)</span>
+          </div>
+        </div>
+
+        <div class="relative mb-4">
+          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+          <input type="text" id="dir-search" placeholder="Buscar en esta red..."
+            class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none" />
+        </div>
+        <p id="directory-stats" class="text-xs text-slate-500 mb-3"></p>
+        <div id="directory-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+
+      <!-- Modal nueva red -->
+      <div id="modal-network" class="fixed inset-0 bg-black/40 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-5">
+          <h3 class="font-semibold mb-3" id="modal-network-title">Nueva red</h3>
+          <input type="text" id="network-name-input" maxlength="40" placeholder="Ej: Amigos, Asociación, Colegio..."
+            class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none mb-4" />
+          <div class="flex justify-end gap-2">
+            <button type="button" onclick="closeModal('modal-network')" class="px-3 py-2 text-sm rounded-lg hover:bg-slate-100">Cancelar</button>
+            <button type="button" onclick="saveNetworkModal()" class="px-4 py-2 bg-brand-600 text-white text-sm rounded-lg hover:bg-brand-700">Guardar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal agregar miembro -->
+      <div id="modal-add-member" class="fixed inset-0 bg-black/40 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl p-5 max-h-[80vh] flex flex-col">
+          <h3 class="font-semibold mb-3">Agregar a la red</h3>
+          <input type="text" id="member-search" placeholder="Buscar por nombre..."
+            class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none mb-3" />
+          <div id="member-picker-list" class="overflow-y-auto flex-1 space-y-2 min-h-[200px]"></div>
+          <button type="button" onclick="closeModal('modal-add-member')" class="mt-3 px-3 py-2 text-sm rounded-lg hover:bg-slate-100 self-end">Cerrar</button>
+        </div>
+      </div>
+      <div id="view-perfil" class="view hidden"><div id="profile-content"></div></div>
+      <div id="view-conexiones" class="view hidden"><p class="text-slate-500">Conexiones (próximamente en esta versión)</p></div>
+      <div id="view-mensajes" class="view hidden"><p class="text-slate-500">Mensajes (próximamente)</p></div>
+      <div id="view-equipo" class="view hidden"><p class="text-slate-500">Equipo (próximamente)</p></div>
+      <div id="view-publicar" class="view hidden"><p class="text-slate-500">Publicar (próximamente)</p></div>
+    </main>
+  </div>
+  <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white px-5 py-3 rounded-lg shadow-lg text-sm hidden z-[100]"></div>
+  <script src="data/matriculados.js"></script>
+  <script src="data/agencias_marketplace.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

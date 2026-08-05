@@ -1,0 +1,9 @@
+{
+  "generated_at": "2026-08-04T23:45:00-03:00",
+  "version": "pba-merge-v1-activos",
+  "total": 11480,
+  "policy": "Excluye Pasivo/Excluido/Suspendido/Baja. Mantiene Activa + Licencia + PBA habilitados sin estado explícito.",
+  "dropped": 1553,
+  "kept_from": 13054,
+  "frontend_file": "directorio-inmobiliario/data/entities_pba_merged.js"
+}

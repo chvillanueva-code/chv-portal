@@ -1,0 +1,17 @@
+# ============================================================
+# Crontab — scrapers CHV Portal (Mercado Libre)
+# ============================================================
+# Ajustá SCRAPERS y PATH de python/playwright según el servidor.
+
+# PATH tipico:
+# export PATH="/root/.local/bin:$PATH"
+# export PYTHONPATH="/root/.local/lib/python3.12/site-packages"
+
+# --- DIARIO 06:30 — 2 págs + enrich hasta 80 fichas sin seller ---
+30 6 * * *  cd /ruta/a/artifacts/scrapers && ./schedules/run_daily.sh
+
+# --- SEMANAL Lunes 03:00 — 8 págs + Lanús + enrich 200 ---
+0 3 * * 1  cd /ruta/a/artifacts/scrapers && ./schedules/run_weekly.sh
+
+# --- MENSUAL día 1 02:00 — full 42 págs + archive ---
+0 2 1 * *  cd /ruta/a/artifacts/scrapers && ./schedules/run_monthly.sh

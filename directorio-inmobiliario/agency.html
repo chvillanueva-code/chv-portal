@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inmobiliaria | CHV Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="../shared/eco-header.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9',
+              600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .avatar { object-fit: cover; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+  <header class="eco-header sticky top-0 z-50">
+    <div class="eco-header-inner" style="max-width:72rem">
+      <a href="index.html" class="eco-brand">
+        <div class="eco-logo-icon"><i class="fas fa-city"></i></div>
+        <div class="hidden sm:block">
+          <div class="eco-brand-name">Ecosistema</div>
+          <div class="eco-brand-sub">Directorio</div>
+        </div>
+      </a>
+      <nav class="eco-nav">
+        <a href="index.html" class="eco-nav-item active">Directorio</a>
+        <a href="../marketplace-inmobiliario/index.html" class="eco-nav-item">Marketplace</a>
+      </nav>
+      <div class="flex-1"></div>
+      <div class="eco-auth">
+        <a href="../marketplace-inmobiliario/index.html" class="eco-auth-link"><i class="fas fa-home mr-1"></i> Propiedades</a>
+        <a href="index.html?auth=login" class="eco-auth-cta">Iniciar sesión</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="agency-root" class="max-w-6xl mx-auto px-4 py-6">
+    <p class="text-slate-400 text-center py-20">Cargando...</p>
+  </main>
+
+  <script src="data/agencias_marketplace.js"></script>
+  <script>
+    function qs(name) {
+      return new URLSearchParams(location.search).get(name);
+    }
+
+    function socialLinks(person) {
+      if (!person) return '';
+      const items = [];
+      if (person.whatsapp || person.phone) {
+        const wa = String(person.whatsapp || person.phone).replace(/\D/g, '');
+        items.push(`<a href="https://wa.me/54${wa}" target="_blank" class="inline-flex items-center gap-1.5 text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1.5 rounded-lg hover:bg-emerald-100"><i class="fab fa-whatsapp"></i> WhatsApp</a>`);
+      }
+      if (person.email) {
+        items.push(`<a href="mailto:${person.email}" class="inline-flex items-center gap-1.5 text-xs bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-lg hover:bg-slate-200"><i class="fas fa-envelope"></i> Email</a>`);
+      }
+      if (person.instagram) {
+        items.push(`<a href="https://instagram.com/${person.instagram}" target="_blank" class="inline-flex items-center gap-1.5 text-xs bg-pink-50 text-pink-700 px-2.5 py-1.5 rounded-lg hover:bg-pink-100"><i class="fab fa-instagram"></i> @${person.instagram}</a>`);
+      }
+      return items.join('');
+    }
+
+    function personCard(person, agency) {
+      if (!person) return '';
+      const isLead = person.role === 'PROFESIONAL';
+      return `
+        <div class="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-md transition">
+          <div class="flex items-start gap-3">
+            <img src="${person.photo}" alt="${person.name}" class="w-14 h-14 rounded-full avatar border-2 ${isLead ? 'border-brand-500' : 'border-slate-200'}" />
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <h3 class="font-semibold text-sm">${person.name}</h3>
+                ${isLead ? '<span class="text-[10px] bg-brand-100 text-brand-700 px-1.5 py-0.5 rounded font-medium">Titular</span>' : '<span class="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">Colaborador</span>'}
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">${person.title || ''}</p>
+              ${person.matricula ? `<p class="text-[11px] text-slate-400 mt-0.5">Mat. ${person.matricula}</p>` : ''}
+              <div class="flex flex-wrap gap-1.5 mt-3">${socialLinks(person)}</div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function renderAgency(ag) {
+      const root = document.getElementById('agency-root');
+      if (!ag) {
+        root.innerHTML = `
+          <div class="text-center py-20">
+            <p class="text-slate-500 mb-4">Inmobiliaria no encontrada</p>
+            <a href="index.html" class="text-brand-600 hover:underline">← Volver al directorio</a>
+          </div>`;
+        return;
+      }
+
+      document.title = `${ag.name} | CHV Portal`;
+
+      const mpUrl = `../marketplace-inmobiliario/index.html?agency=${encodeURIComponent(ag.id)}`;
+      const team = [];
+      if (ag.responsible) team.push(ag.responsible);
+      (ag.collaborators || []).forEach(c => team.push(c));
+
+      root.innerHTML = `
+        <!-- Cover + logo bar -->
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden mb-6">
+          <div class="h-28 sm:h-36 bg-gradient-to-r from-brand-800 to-brand-500 relative">
+            <div class="absolute inset-0 opacity-20" style="background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><circle cx=%222%22 cy=%222%22 r=%221%22 fill=%22white%22/></svg>');"></div>
+          </div>
+          <div class="px-5 sm:px-8 pb-6 -mt-10 relative">
+            <div class="flex flex-col sm:flex-row sm:items-end gap-4">
+              <img src="${ag.logo || ag.avatar}" alt="${ag.name}"
+                   class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-4 border-white shadow-lg bg-white object-cover" />
+              <div class="flex-1 min-w-0 pb-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h1 class="text-xl sm:text-2xl font-bold text-slate-900">${ag.name}</h1>
+                  ${ag.verified || ag.from_padron ? '<i class="fas fa-check-circle text-emerald-500" title="Matrícula verificada"></i>' : ''}
+                </div>
+                <p class="text-sm text-slate-500 mt-0.5">
+                  <i class="fas fa-map-marker-alt text-slate-400 mr-1"></i>${ag.location || 'Avellaneda'}
+                  ${ag.address ? ' · ' + ag.address : ''}
+                </p>
+                ${ag.matricula ? `<p class="text-xs text-slate-400 mt-1">Matrícula ${ag.matricula} · Colegio Avellaneda-Lanús</p>` : ''}
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <a href="${mpUrl}" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg shadow-sm">
+                  <i class="fas fa-home"></i> ${ag.property_count || 0} propiedades
+                </a>
+                ${ag.whatsapp || ag.phone ? `
+                  <a href="https://wa.me/54${String(ag.whatsapp || ag.phone).replace(/\\D/g,'')}" target="_blank"
+                     class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold px-4 py-2.5 rounded-lg">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                  </a>` : ''}
+              </div>
+            </div>
+
+            ${ag.bio ? `<p class="text-sm text-slate-600 mt-4 max-w-3xl">${ag.bio}</p>` : ''}
+
+            <!-- Org social -->
+            <div class="flex flex-wrap gap-2 mt-4">
+              ${ag.instagram ? `<a href="https://instagram.com/${ag.instagram}" target="_blank" class="inline-flex items-center gap-1.5 text-xs bg-pink-50 text-pink-700 px-3 py-1.5 rounded-full hover:bg-pink-100"><i class="fab fa-instagram"></i> @${ag.instagram}</a>` : ''}
+              ${ag.email ? `<a href="mailto:${ag.email}" class="inline-flex items-center gap-1.5 text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-full hover:bg-slate-200"><i class="fas fa-envelope"></i> ${ag.email}</a>` : ''}
+              ${ag.website ? `<a href="${ag.website}" target="_blank" class="inline-flex items-center gap-1.5 text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-full hover:bg-slate-200"><i class="fas fa-globe"></i> Web</a>` : ''}
+              ${!(ag.instagram || ag.email || ag.website) ? `<span class="text-xs text-slate-400">Sin redes cargadas aún</span>` : ''}
+            </div>
+          </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-6">
+          <!-- Team -->
+          <div class="lg:col-span-2 space-y-4">
+            <div class="flex items-center justify-between">
+              <h2 class="text-lg font-bold text-slate-900">
+                <i class="fas fa-users text-brand-600 mr-2"></i>Equipo
+                <span class="text-sm font-normal text-slate-400 ml-1">(${team.length})</span>
+              </h2>
+            </div>
+
+            ${ag.responsible ? `
+              <div>
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Profesional a cargo</p>
+                ${personCard(ag.responsible, ag)}
+              </div>` : `
+              <div class="bg-amber-50 border border-amber-100 rounded-xl p-4 text-sm text-amber-800">
+                <i class="fas fa-info-circle mr-1"></i> Aún no hay un profesional matriculado vinculado a esta inmobiliaria.
+              </div>`}
+
+            ${(ag.collaborators || []).length ? `
+              <div>
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2 mt-4">Colaboradores</p>
+                <div class="grid sm:grid-cols-2 gap-3">
+                  ${ag.collaborators.map(c => personCard(c, ag)).join('')}
+                </div>
+              </div>` : ''}
+          </div>
+
+          <!-- Sidebar -->
+          <div class="space-y-4">
+            <div class="bg-white rounded-xl border border-slate-200 p-5">
+              <h3 class="font-semibold text-sm mb-3">Resumen</h3>
+              <ul class="space-y-2.5 text-sm text-slate-600">
+                <li class="flex justify-between gap-2">
+                  <span>Propiedades</span>
+                  <a href="${mpUrl}" class="font-semibold text-brand-600 hover:underline">${ag.property_count || 0}</a>
+                </li>
+                <li class="flex justify-between gap-2"><span>Equipo</span><span class="font-medium">${team.length}</span></li>
+                <li class="flex justify-between gap-2"><span>Origen</span><span class="font-medium">${ag.from_padron ? 'Padrón + ML' : 'Marketplace'}</span></li>
+                ${ag.matricula ? `<li class="flex justify-between gap-2"><span>Matrícula</span><span class="font-medium">${ag.matricula}</span></li>` : ''}
+              </ul>
+              <a href="${mpUrl}" class="mt-4 block text-center bg-brand-50 hover:bg-brand-100 text-brand-700 font-semibold text-sm py-2.5 rounded-lg transition">
+                Ver propiedades en marketplace →
+              </a>
+            </div>
+
+            <div class="bg-white rounded-xl border border-slate-200 p-5">
+              <h3 class="font-semibold text-sm mb-2">Estructura</h3>
+              <ol class="text-xs text-slate-500 space-y-1.5 list-decimal list-inside">
+                <li><strong class="text-slate-700">Inmobiliaria</strong> — organización principal</li>
+                <li><strong class="text-slate-700">Profesional</strong> — matriculado a cargo</li>
+                <li><strong class="text-slate-700">Colaboradores</strong> — equipo operativo</li>
+              </ol>
+            </div>
+
+            <a href="index.html" class="block text-center text-sm text-slate-500 hover:text-brand-600">
+              ← Volver al directorio
+            </a>
+          </div>
+        </div>
+      `;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const id = qs('id');
+      const list = typeof AGENCIAS_MARKETPLACE !== 'undefined' ? AGENCIAS_MARKETPLACE : [];
+      const ag = list.find(a => a.id === id) || (typeof AGENCIAS_BY_ID !== 'undefined' ? AGENCIES_BY_ID[id] : null);
+      renderAgency(ag);
+    });
+  </script>
+</body>
+</html>

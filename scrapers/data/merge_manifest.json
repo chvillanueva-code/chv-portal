@@ -1,0 +1,158 @@
+{
+  "generated_at": "2026-08-04T20:04:10-03:00",
+  "version": "pba-merge-v1",
+  "policy": "Bases originarias NO se modifican. Cada merge genera archivo versionado + latest.",
+  "original_sources": [
+    {
+      "id": "padron_matanza",
+      "file": "padron_matanza.json",
+      "colegio_code": "LM",
+      "label": "La Matanza",
+      "total": 534,
+      "scraped_at": null,
+      "preserved": true
+    },
+    {
+      "id": "padron_moron",
+      "file": "padron_moron.json",
+      "colegio_code": "MO",
+      "label": "Morón",
+      "total": 2058,
+      "scraped_at": "2026-08-04T19:14:50-03:00",
+      "preserved": true
+    },
+    {
+      "id": "padron_mdp",
+      "file": "padron_mdp.json",
+      "colegio_code": "MP",
+      "label": "Mar del Plata",
+      "total": 1159,
+      "scraped_at": "2026-08-04T19:15:44-03:00",
+      "preserved": true
+    },
+    {
+      "id": "padron_azul",
+      "file": "padron_azul.json",
+      "colegio_code": "AZ",
+      "label": "Azul",
+      "total": 620,
+      "scraped_at": "2026-08-04T19:56:31-03:00",
+      "preserved": true
+    },
+    {
+      "id": "padron_sannicolas",
+      "file": "padron_sannicolas.json",
+      "colegio_code": "SN",
+      "label": "San Nicolás",
+      "total": 251,
+      "scraped_at": "2026-08-04T19:56:33-03:00",
+      "preserved": true
+    },
+    {
+      "id": "padron_quilmes_electoral",
+      "file": "padron_quilmes_electoral.json",
+      "colegio_code": "QL",
+      "label": "Quilmes electoral",
+      "total": 398,
+      "scraped_at": "2026-08-04T19:58:23-03:00",
+      "preserved": true
+    },
+    {
+      "id": "padron_pba_martillerosba",
+      "file": "padron_pba_martillerosba.json",
+      "colegio_code": "PBA",
+      "label": "Padrón provincial martillerosba",
+      "total": 11164,
+      "scraped_at": "2026-08-04T16:52:42-03:00",
+      "preserved": true
+    },
+    {
+      "id": "padron_pba_entities",
+      "file": "padron_pba_entities.json",
+      "colegio_code": "PBA",
+      "label": "PBA como entities",
+      "total": 11164,
+      "scraped_at": "2026-08-04T16:52:42-03:00",
+      "preserved": true
+    },
+    {
+      "id": "padron_cpmcal_2017",
+      "file": "directorio-inmobiliario/data/matriculados.js",
+      "colegio_code": "AL",
+      "label": "CPMCAL Avellaneda-Lanús 2017",
+      "total": 405,
+      "scraped_at": "2017-08-24",
+      "preserved": true
+    }
+  ],
+  "outputs": [
+    {
+      "file": "entities_merged_pba_v1_2026-08-04.json",
+      "total": 13054,
+      "role": "snapshot versionado"
+    },
+    {
+      "file": "entities_merged_pba_latest.json",
+      "total": 13054,
+      "role": "puntero latest"
+    }
+  ],
+  "stats": {
+    "by_colegio": {
+      "AL": 591,
+      "AZ": 649,
+      "BB": 659,
+      "DO": 613,
+      "JU": 270,
+      "LM": 586,
+      "LP": 1016,
+      "LZ": 759,
+      "ME": 587,
+      "MO": 2072,
+      "MP": 1125,
+      "MR": 212,
+      "NC": 85,
+      "PG": 98,
+      "QL": 512,
+      "SI": 1688,
+      "SM": 718,
+      "SN": 273,
+      "TL": 227,
+      "ZC": 314
+    },
+    "with_email": 2625,
+    "with_phone": 3743,
+    "with_geo": 1084,
+    "with_matricula": 5096,
+    "multi_source": 3463,
+    "enriched_match": 3535,
+    "enriched_only": 1890,
+    "fields_filled": {
+      "email": 2354,
+      "phone": 2657,
+      "legal_name": 1205,
+      "matricula": 3228,
+      "estado": 750,
+      "geo": 1049,
+      "ciudad": 6,
+      "domicilio": 1
+    }
+  },
+  "history": [
+    {
+      "at": "2026-08-04T20:04:10-03:00",
+      "action": "merge_total_v1",
+      "base": "padron_pba_entities.json (11164)",
+      "overlays": [
+        "padron_matanza",
+        "padron_moron",
+        "padron_mdp",
+        "padron_azul",
+        "padron_sannicolas",
+        "padron_quilmes_electoral",
+        "padron_cpmcal_2017"
+      ],
+      "result_total": 13054
+    }
+  ]
+}

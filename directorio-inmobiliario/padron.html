@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Directorio · Ecosistema Inmobiliario</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9',
+              600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="../shared/eco-header.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <style>
+    .avatar { object-fit: cover; }
+    #dir-map { height: 480px; width: 100%; z-index: 0; }
+    @media (min-width: 1024px) {
+      #dir-map { height: calc(100vh - 160px); min-height: 640px; }
+    }
+    .leaflet-popup-content { margin: 10px 12px; min-width: 180px; }
+    .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
+      background-color: rgba(2, 132, 199, 0.25) !important;
+    }
+    .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
+      background-color: #0284c7 !important;
+      color: #fff !important;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+  <header class="eco-header sticky top-0 z-40">
+    <div class="eco-header-inner" style="max-width:80rem">
+      <a href="index.html" class="eco-brand">
+        <div class="eco-logo-icon"><i class="fas fa-city"></i></div>
+        <div class="hidden sm:block">
+          <div class="eco-brand-name">Ecosistema</div>
+          <div class="eco-brand-sub">Directorio</div>
+        </div>
+      </a>
+      <nav class="eco-nav">
+        <a href="padron.html" class="eco-nav-item active">Directorio</a>
+        <a href="../marketplace-inmobiliario/index.html" class="eco-nav-item">Marketplace</a>
+      </nav>
+      <form class="eco-search" onsubmit="event.preventDefault(); const q=document.getElementById('padron-header-search'); const s=document.getElementById('search'); if(q&&s){s.value=q.value; s.dispatchEvent(new Event('input'));}">
+        <input id="padron-header-search" type="text" class="eco-search-input" placeholder="Buscar matriculados..." />
+        <button type="submit" class="eco-search-btn"><i class="fas fa-search"></i></button>
+      </form>
+      <div class="eco-auth">
+        <a href="index.html?auth=login" class="eco-auth-link">Iniciar sesión</a>
+        <a href="index.html?auth=register" class="eco-auth-cta">Registrarte</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-5">
+    <div class="mb-4">
+      <h1 class="text-2xl font-bold text-slate-900">Directorio</h1>
+      <p class="text-sm text-slate-500 mt-1">
+        Padrón unificado Provincia de Buenos Aires · Martilleros y Corredores Públicos
+        · Solo <strong>Activa</strong> y <strong>Licencia</strong> (bajas / pasivos / excluídos filtrados)
+      </p>
+    </div>
+
+    <div class="bg-white rounded-xl border border-slate-200 p-3 mb-4 flex flex-wrap gap-2 items-center">
+      <div class="relative flex-1 min-w-[200px]">
+        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+        <input type="text" id="f-search" placeholder="Nombre, matrícula, inmobiliaria, dirección..."
+          class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none" />
+      </div>
+      <select id="f-dto" class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none" title="Departamento Judicial">
+        <option value="">Dto. Judicial</option>
+      </select>
+      <select id="f-ciudad" class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+        <option value="">Ciudad</option>
+      </select>
+      <select id="f-barrio" class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+        <option value="">Barrio</option>
+      </select>
+      <button id="btn-toggle-view" class="px-3 py-2 border border-slate-300 rounded-lg text-sm hover:bg-slate-50 flex items-center gap-2" title="Cambiar vista">
+        <i class="fas fa-map"></i> <span id="view-label">Solo lista</span>
+      </button>
+    </div>
+
+    <p id="stats" class="text-xs text-slate-500 mb-3"></p>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <div id="map-panel" class="lg:col-span-7">
+        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm sticky top-16">
+          <div id="dir-map"></div>
+          <div class="px-3 py-2 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between gap-2 flex-wrap">
+            <span><i class="fas fa-layer-group mr-1"></i> Clustering · ubicación por ciudad / domicilio</span>
+            <span id="map-count"></span>
+          </div>
+        </div>
+      </div>
+      <div id="list-panel" class="lg:col-span-5">
+        <div id="dir-list" class="space-y-2.5 max-h-[calc(100vh-160px)] overflow-y-auto pr-1"></div>
+        <p id="empty" class="hidden text-center text-slate-400 py-16">No se encontraron resultados con esos filtros.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="border-t border-slate-200 mt-10 py-6 text-center text-xs text-slate-400">
+    Ecosistema Inmobiliario · CHV · Escalable a padrones provinciales y fuentes multi-portal
+  </footer>
+
+  <div id="detail-modal" class="fixed inset-0 bg-black/40 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between p-4 border-b border-slate-100 sticky top-0 bg-white rounded-t-2xl z-10">
+        <h3 class="font-semibold text-slate-900">Ficha del profesional</h3>
+        <button onclick="closeDetail()" class="text-slate-400 hover:text-slate-600 w-9 h-9 rounded-lg hover:bg-slate-100 flex items-center justify-center">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div id="detail-body" class="p-5"></div>
+    </div>
+  </div>
+
+  <script src="data/entities_pba_merged.js"></script>
+  <script src="js/padron.js"></script>
+</body>
+</html>

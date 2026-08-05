@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marketplace Inmobiliario</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="../shared/eco-header.css" />
+  <link rel="stylesheet" href="css/custom.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9',
+              600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#f0f2f5] text-gray-800 h-screen flex flex-col overflow-hidden">
+
+  <!-- ========== HEADER UNIFICADO ========== -->
+  <header class="eco-header sticky top-0 z-50 shrink-0">
+    <div class="eco-header-inner">
+      <a href="index.html" class="eco-brand">
+        <div class="eco-logo-icon"><i class="fas fa-city"></i></div>
+        <div class="hidden sm:block">
+          <div class="eco-brand-name">Ecosistema</div>
+          <div class="eco-brand-sub">Marketplace</div>
+        </div>
+      </a>
+
+      <nav class="eco-nav">
+        <a href="../directorio-inmobiliario/index.html" class="eco-nav-item">Directorio</a>
+        <a href="index.html" class="eco-nav-item active">Marketplace</a>
+      </nav>
+
+      <form id="search-form" class="eco-search">
+        <input id="search-input" type="text" class="eco-search-input"
+          placeholder="Buscar inmuebles, ubicación..." autocomplete="off" />
+        <button type="submit" class="eco-search-btn"><i class="fas fa-search"></i></button>
+      </form>
+
+      <div class="eco-auth">
+        <a href="../directorio-inmobiliario/index.html?auth=login" class="eco-auth-link">Iniciar sesión</a>
+        <a href="../directorio-inmobiliario/index.html?auth=register" class="eco-auth-cta">Registrarte</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Banner agencia (si viene del directorio) -->
+  <div id="agency-filter-banner" class="hidden bg-brand-50 border-b border-brand-100 shrink-0">
+    <div class="max-w-[1600px] mx-auto px-4 py-2 flex items-center justify-between gap-3 text-sm">
+      <div id="agency-filter-label" class="text-brand-800 font-medium"></div>
+      <button onclick="clearAgencyFilter()" class="text-xs text-brand-600 hover:underline">Quitar filtro ×</button>
+    </div>
+  </div>
+
+  <!-- ========== FILTROS DESPLEGABLES ========== -->
+  <div class="bg-white border-b border-gray-200 shrink-0 z-40">
+    <div class="max-w-[1600px] mx-auto px-4 py-2.5">
+      <div class="flex flex-wrap items-center gap-2">
+        <!-- Operación -->
+        <div class="relative">
+          <select id="filter-operation" class="filter-select" onchange="onDropdownFilter('operation', this.value)">
+            <option value="">Operación</option>
+            <option value="Venta">Venta</option>
+            <option value="Alquiler">Alquiler</option>
+          </select>
+        </div>
+        <!-- Tipo -->
+        <div class="relative">
+          <select id="filter-type" class="filter-select" onchange="onDropdownFilter('type', this.value)">
+            <option value="">Tipo</option>
+            <option value="Departamento">Departamento</option>
+            <option value="Casa">Casa</option>
+            <option value="PH">PH</option>
+            <option value="Terreno">Terreno</option>
+            <option value="Local">Local</option>
+            <option value="Oficina">Oficina</option>
+          </select>
+        </div>
+        <!-- Ciudad -->
+        <div class="relative">
+          <select id="filter-city" class="filter-select" onchange="onDropdownFilter('city', this.value)">
+            <option value="">Ciudad</option>
+            <option value="CABA">CABA</option>
+            <option value="Avellaneda">Avellaneda</option>
+            <option value="Tigre">Tigre</option>
+            <option value="San Isidro">San Isidro</option>
+            <option value="Pilar">Pilar</option>
+            <option value="Escobar">Escobar</option>
+          </select>
+        </div>
+        <!-- Barrio -->
+        <div class="relative">
+          <select id="filter-neighborhood" class="filter-select" onchange="onDropdownFilter('neighborhood', this.value)">
+            <option value="">Barrio</option>
+            <option value="Palermo Hollywood">Palermo Hollywood</option>
+            <option value="Belgrano R">Belgrano R</option>
+            <option value="Puerto Madero">Puerto Madero</option>
+            <option value="Villa Crespo">Villa Crespo</option>
+            <option value="Caballito">Caballito</option>
+            <option value="Nuñez">Nuñez</option>
+            <option value="Los Alisos">Los Alisos</option>
+            <option value="Centro">Centro</option>
+            <option value="Pilar del Este">Pilar del Este</option>
+          </select>
+        </div>
+        <!-- Fuente -->
+        <div class="relative">
+          <select id="filter-source" class="filter-select" onchange="onDropdownFilter('source', this.value)">
+            <option value="">Fuente</option>
+            <option value="ZonaProp">ZonaProp</option>
+            <option value="Mercado Libre">Mercado Libre</option>
+            <option value="Argenprop">Argenprop</option>
+            <option value="Properati">Properati</option>
+            <option value="Otros">Otros</option>
+          </select>
+        </div>
+
+        <button onclick="clearFilters()" class="text-xs text-brand-600 font-medium hover:underline px-2">
+          Limpiar
+        </button>
+
+        <div class="flex-1"></div>
+
+        <div class="flex items-center gap-2 text-sm">
+          <span id="results-count" class="text-gray-500 text-xs sm:text-sm">—</span>
+          <select id="sort-select" class="filter-select">
+            <option value="relevance">Más relevantes</option>
+            <option value="price_asc">Menor precio</option>
+            <option value="price_desc">Mayor precio</option>
+            <option value="newest">Más recientes</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== MAIN: MAPA IZQ + LISTA DER ========== -->
+  <main class="flex-1 min-h-0 flex max-w-[1600px] w-full mx-auto">
+    <!-- Mapa (izquierda) -->
+    <div id="map-pane" class="w-full md:w-[45%] lg:w-[42%] h-full relative border-r border-gray-200 bg-gray-100">
+      <div id="map" class="absolute inset-0 z-0"></div>
+      <div id="map-legend" class="absolute bottom-3 left-3 z-[1000] bg-white/95 backdrop-blur rounded-lg shadow px-3 py-2 text-xs text-gray-600 flex gap-3">
+        <span><span class="inline-block w-2.5 h-2.5 rounded-full bg-brand-600 mr-1"></span>Venta</span>
+        <span><span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 mr-1"></span>Alquiler</span>
+      </div>
+    </div>
+
+    <!-- Lista (derecha) -->
+    <div id="list-pane" class="w-full md:w-[55%] lg:w-[58%] h-full overflow-y-auto bg-[#f0f2f5]">
+      <div id="results-list" class="p-3 space-y-3">
+        <!-- cards via JS -->
+      </div>
+      <div id="empty-state" class="hidden py-20 text-center text-gray-400">
+        <i class="fas fa-search text-4xl mb-3"></i>
+        <p class="text-lg">No hay resultados con esos filtros</p>
+        <button onclick="clearFilters()" class="mt-3 text-brand-600 font-medium hover:underline">Limpiar filtros</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

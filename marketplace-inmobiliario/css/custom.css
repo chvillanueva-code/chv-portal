@@ -1,0 +1,282 @@
+/* ============================================================
+   Marketplace Inmobiliario — Mapa + Lista · filtros dropdown
+   ============================================================ */
+
+:root {
+  --brand-50: #f0f9ff;
+  --brand-100: #e0f2fe;
+  --brand-500: #0ea5e9;
+  --brand-600: #0284c7;
+  --brand-700: #0369a1;
+  --brand-800: #075985;
+  --brand-900: #0c4a6e;
+  --green: #00A650;
+  --whatsapp: #25D366;
+  --gray-text: #4a4a4a;
+  --bg: #f0f2f5;
+}
+
+body {
+  background-color: var(--bg);
+  font-family: "Proxima Nova", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  color: #222;
+}
+
+/* ---------- Header ---------- */
+.ml-header {
+  background: linear-gradient(135deg, var(--brand-700) 0%, var(--brand-600) 100%);
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+  color: white;
+}
+
+.ml-logo {
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: white;
+}
+
+.ml-header a,
+.ml-header button {
+  color: white;
+}
+
+.ml-header a:hover,
+.ml-header button:hover {
+  opacity: 0.9;
+}
+
+/* Register button is white bg — override */
+.ml-header a.bg-white {
+  color: var(--brand-700);
+}
+.ml-header a.bg-white:hover {
+  opacity: 1;
+  background: var(--brand-50) !important;
+}
+
+.search-input {
+  border: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
+  color: #222;
+  border-radius: 8px 0 0 8px;
+}
+
+.search-input:focus {
+  outline: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,.18);
+}
+
+.search-btn {
+  background: white;
+  color: var(--brand-700);
+  border-radius: 0 8px 8px 0;
+  font-weight: 600;
+}
+
+.search-btn:hover {
+  background: #f8fafc;
+}
+
+/* ---------- Filter selects ---------- */
+.filter-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M3 4.5L6 8l3-3.5'/%3E%3C/svg%3E") no-repeat right 10px center;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 7px 28px 7px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+  min-width: 110px;
+}
+
+.filter-select:hover {
+  border-color: var(--brand-500);
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--brand-600);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+/* ---------- List cards (horizontal) ---------- */
+.list-card {
+  display: flex;
+  gap: 0;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e8eaed;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s;
+}
+
+.list-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -6px rgba(0,0,0,.14);
+  border-color: transparent;
+}
+
+.list-card-img {
+  position: relative;
+  width: 160px;
+  min-height: 130px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #e5e7eb;
+}
+
+.list-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.list-card-body {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.source-pill {
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(4px);
+  color: white;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.price {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+}
+
+.operation-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--brand-700);
+  background: var(--brand-50);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.specs-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  font-size: 12.5px;
+  color: var(--gray-text);
+  margin-top: 6px;
+}
+
+.specs-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.specs-row i {
+  color: #9ca3af;
+  font-size: 11px;
+  width: 13px;
+  text-align: center;
+}
+
+.location {
+  color: #6b7280;
+  font-size: 12.5px;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid #f3f4f6;
+  font-size: 11.5px;
+  color: #9ca3af;
+}
+
+.badge-super {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.badge-new {
+  background: var(--brand-600);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+/* ---------- Leaflet tweaks ---------- */
+.leaflet-container {
+  font-family: inherit;
+  z-index: 0;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.15);
+}
+
+.leaflet-popup-content {
+  margin: 10px 12px;
+}
+
+/* ---------- Buttons (detalle) ---------- */
+.btn-ml {
+  background: var(--brand-600);
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background .15s;
+}
+.btn-ml:hover { background: var(--brand-700); }
+
+.btn-outline {
+  border: 1.5px solid var(--brand-600);
+  color: var(--brand-600);
+  border-radius: 8px;
+  font-weight: 600;
+}
+.btn-outline:hover { background: var(--brand-50); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  #map-pane {
+    display: none; /* en mobile solo lista; se puede agregar toggle después */
+  }
+  #list-pane {
+    width: 100% !important;
+  }
+  .list-card-img {
+    width: 120px;
+    min-height: 110px;
+  }
+  .price { font-size: 16px; }
+}
+
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
