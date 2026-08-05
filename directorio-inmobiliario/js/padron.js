@@ -59,11 +59,12 @@ function enrichRecord(u) {
     lat = box.lat + (hash01(sk) - 0.5) * box.span;
     lng = box.lng + (hash01(sk + 'x') - 0.5) * box.span;
   }
-  return { ...u, dto_judicial: dto, ciudad, barrio, lat, lng, _address: addressText(u) };
+  const avatar = u.avatar || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(String(u.name || '?').slice(0, 40)) + '&background=0284c7&color=fff&size=96');
+  return { ...u, avatar, dto_judicial: dto, ciudad, barrio, lat, lng, _address: addressText(u) };
 }
 
 function esc(s) {
-  return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return String(s ?? '').replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
 }
 
 function fillSelect(id, values, ph) {
@@ -122,7 +123,6 @@ function renderList(list) {
     return;
   }
   empty?.classList.add('hidden');
-  // Virtualize-ish: render first 200 for performance, show note if more
   const MAX = 200;
   const slice = list.slice(0, MAX);
   const more = list.length > MAX ? '<p class="text-xs text-slate-400 text-center py-3">Mostrando los primeros ' + MAX + ' de ' + list.length.toLocaleString('es-AR') + '. Usá filtros o búsqueda para acotar.</p>' : '';
@@ -158,7 +158,12 @@ function initMap() {
   if (map) return;
   map = L.map('dir-map', { scrollWheelZoom: true }).setView([DEFAULT_CENTER.lat, DEFAULT_CENTER.lng], 10);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OSM', maxZoom: 18 }).addTo(map);
-  clusterGroup = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 45, spiderfyOnMaxZoom: true, disableClusteringAtZoom: 16 });
+  clusterGroup = L.markerClusterGroup({
+    showCoverageOnHover: false,
+    maxClusterRadius: 60,
+    spiderfyOnMaxZoom: true,
+    disableClusteringAtZoom: 15
+  });
   map.addLayer(clusterGroup);
 }
 
@@ -167,10 +172,8 @@ function renderMap(list) {
   clusterGroup.clearLayers();
   markerById = {};
   const bounds = [];
-  // Cap markers for performance on full PBA
-  const MAX_MARKERS = 2500;
-  const toPlot = list.length > MAX_MARKERS ? list.slice(0, MAX_MARKERS) : list;
-  toPlot.forEach(u => {
+  // Todos los registros en el cluster: zoom lejos = grupos por zona/ciudad, zoom cerca = cada uno
+  list.forEach(u => {
     bounds.push([u.lat, u.lng]);
     const icon = L.divIcon({
       className: '',
@@ -185,13 +188,9 @@ function renderMap(list) {
     markerById[u.id] = m;
   });
   const mc = document.getElementById('map-count');
-  if (mc) {
-    mc.textContent = list.length > MAX_MARKERS
-      ? (MAX_MARKERS.toLocaleString('es-AR') + ' en mapa (de ' + list.length.toLocaleString('es-AR') + ')')
-      : (list.length.toLocaleString('es-AR') + ' en mapa');
-  }
+  if (mc) mc.textContent = list.length.toLocaleString('es-AR') + ' en mapa';
   if (bounds.length) {
-    try { map.fitBounds(bounds, { padding: [24, 24], maxZoom: 13 }); } catch (e) {}
+    try { map.fitBounds(bounds, { padding: [24, 24], maxZoom: 12 }); } catch (e) {}
   }
 }
 
